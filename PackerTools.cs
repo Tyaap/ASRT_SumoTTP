@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -16,7 +17,7 @@ namespace SumoTTP
         private static bool overwriteFiles;
         private static int inDirectoryPathLength;
 
-        public static readonly string[] specialUnpackFiles = new string[] { "racers.zat", "weaponpodallocation.zat" };
+        public static readonly string[] specialUnpackFiles = new string[] {  "racers.zat", "weaponpodallocation.zat" };
         public static readonly string[] specialPackFiles = new string[] { "racers.dat", "weaponpodallocation.dat" };
 
         public static void Init(ToolStripProgressBar toolStripProgressBar, ToolStripStatusLabel toolStripStatusLabel, SynchronizationContext synchronizationContext)
@@ -119,6 +120,17 @@ namespace SumoTTP
 
                 byte[] fileBytes = File.ReadAllBytes(file.FullName);
                 string inFilePath = file.FullName;
+                
+                if (file.Extension == ".xml")
+                {
+                    CryptTools.ZEncrypt(fileBytes);
+                    inFilePath = JoinPaths(file.DirectoryName, Path.GetFileNameWithoutExtension(file.Name) + ".zml");
+                }
+                else if (Array.IndexOf(specialPackFiles, file.Name) != -1)
+                {
+                    CryptTools.ZEncrypt(fileBytes);
+                    inFilePath = JoinPaths(file.DirectoryName, Path.GetFileNameWithoutExtension(file.Name) + ".zat");
+                }
 
                 toc.entries[tocOffset + i] = new tocEntryStruct()
                 {
@@ -177,15 +189,11 @@ namespace SumoTTP
 
             if (tocEntry.isFolder)
             {
-                if (tocIndex == 0)
-                {
-                    outDirectoryPath = JoinPaths(outDirectoryPath, toc.name);
-                }
-                else
+                if (tocIndex != 0)
                 {
                     packagePath = JoinPaths(packagePath, tocEntry.name);
+                    Directory.CreateDirectory(JoinPaths(outDirectoryPath, packagePath));
                 }
-                Directory.CreateDirectory(JoinPaths(outDirectoryPath, packagePath));
                 for (uint i = 0; i < tocEntry.length; i++)
                 {
                     Unpack(toc, tocEntry.offset + i, packagePath, inDirectoryPath, outDirectoryPath);
@@ -206,7 +214,19 @@ namespace SumoTTP
 
                 byte[] fileBytes = ExtractFile(inFilePath, tocEntry.offset, tocEntry.length);
 
-                if (Path.GetExtension(tocEntry.name) == ".stz")
+                
+                if (Path.GetExtension(tocEntry.name) == ".zml")
+                {
+                    CryptTools.ZDecrypt(fileBytes);
+                    SafeFileWrite(outFilePath + ".xml", fileBytes);
+                }
+                else if (Array.IndexOf(specialUnpackFiles, tocEntry.name) != -1)
+                {
+                    CryptTools.ZDecrypt(fileBytes);
+                    SafeFileWrite(outFilePath + ".dat", fileBytes);
+                }
+                
+                else if (Path.GetExtension(tocEntry.name) == ".stz")
                 {
                     Stz StzFile = new Stz(Path.GetFileNameWithoutExtension(tocEntry.name), fileBytes);
                     SafeFileWrite(outFilePath + ".dat", StzFile.data[3]);

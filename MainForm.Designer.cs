@@ -356,7 +356,7 @@
             this.richTextBoxAbout.ReadOnly = true;
             this.richTextBoxAbout.Size = new System.Drawing.Size(321, 104);
             this.richTextBoxAbout.TabIndex = 0;
-            this.richTextBoxAbout.Text = "SUMO Top Tier Packer V1.1\n\nMade by Tyapp";
+            this.richTextBoxAbout.Text = "SUMO Top Tier Packer V1.3\n\nMade by Tyapp";
             // 
             // MainForm
             // 

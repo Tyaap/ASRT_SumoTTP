@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29009.5
+VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SumoTTP", "SumoTTP.csproj", "{8F4DB1AD-52EC-44CC-A6C5-61510187D778}"
 EndProject
@@ -26,6 +26,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {F2273220-1C75-4E4B-AA65-43052238DD9B}
+		SolutionGuid = {859DC9FE-1795-4F30-AB9D-6579D86DEC65}
 	EndGlobalSection
 EndGlobal

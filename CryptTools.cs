@@ -42,6 +42,8 @@ namespace SumoTTP
             0x98, 0x44, 0x8B, 0x72, 0xAB, 0x37, 0x4E, 0x7F, 0xC6, 0xDE, 0x47, 0x5B, 0x80, 0x1F, 0xA3, 0xBA, 0x1F, 0x05, 0x62, 0x37, 0x08, 0x94, 0xE0, 0x81, 0x5F, 0x54, 0x5A, 0x6C, 0x67, 0x1A, 0x5B, 0x0D,
             0x89, 0xFC, 0x9E, 0xC9, 0x83, 0xE2, 0x6A, 0xEA, 0x00, 0xE1, 0xB1, 0x40, 0x7E, 0x4D, 0x27, 0x8D, 0xE7, 0x4B, 0x31, 0xD5, 0xAA, 0xAE, 0x78, 0xA5, 0xED, 0xBC, 0x43, 0x90, 0x11, 0xCE, 0xB2, 0xDB };
 
+        static readonly byte[] key2 = { 0xFF, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xBB, 0xAC, 0x9D, 0x8E, 0x7F, 0x60, 0x51, 0x42 };
+
         public static void TocDecryptEncrypt(byte[] bytes)
         {
             for (int i = 0; i < bytes.Length; i++)
@@ -64,6 +66,64 @@ namespace SumoTTP
             }
 
             return x;
+        }
+
+        public static void ZDecrypt(byte[] bytes)
+        {
+            SplitFlip(bytes);
+            KeyShiftLeft(bytes, key2);
+            Reverse(bytes);
+        }
+
+        public static void ZEncrypt(byte[] bytes)
+        {
+            Reverse(bytes);
+            KeyShiftRight(bytes, key2);
+            SplitFlip(bytes);
+        }
+
+        static void SplitFlip(byte[] byteArray)
+        {
+            int length = byteArray.Length;
+
+            for (int i = 0; i < length / 2; i++)
+            {
+                byte tmp = byteArray[i];
+                byteArray[i] = byteArray[length / 2 + i];
+                byteArray[length / 2 + i] = tmp;
+            }
+        }
+
+        static void Reverse(byte[] byteArray)
+        {
+            int length = byteArray.Length;
+
+            for (int i = 0; i < length / 2; i++)
+            {
+                byte tmp = byteArray[i];
+                byteArray[i] = byteArray[length - 1 - i];
+                byteArray[length - 1 - i] = tmp;
+            }
+        }
+
+        static void KeyShiftLeft(byte[] byteArray, byte[] key)
+        {
+            int length = byteArray.Length;
+
+            for (int i = 0; i < length; i++)
+            {
+                byteArray[i] -= key[i % 16];
+            }
+        }
+
+        static void KeyShiftRight(byte[] byteArray, byte[] key)
+        {
+            int length = byteArray.Length;
+
+            for (int i = 0; i < length; i++)
+            {
+                byteArray[i] += key[i % 16];
+            }
         }
     }
 }
